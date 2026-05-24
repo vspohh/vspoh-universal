@@ -81,7 +81,7 @@ local Config = {
         ClickTPKey = Enum.KeyCode.Unknown
     },
     Options = {
-        MenuKeybind = Enum.KeyCode.Insert
+        MenuKeybind = Enum.KeyCode.Delete
     },
     Misc = {
         DesyncEnabled = false,
@@ -1638,10 +1638,10 @@ KBAccent.Parent = KeybindListFrame
 local kbac = Instance.new("UICorner") kbac.CornerRadius = UDim.new(1, 0) kbac.Parent = KBAccent
 
 local KeybindListTitle = Instance.new("TextLabel")
-KeybindListTitle.Size = UDim2.new(1, 0, 0, 22)
-KeybindListTitle.Position = UDim2.new(0, 0, 0, 2)
+KeybindListTitle.Size = UDim2.new(1, -16, 0, 22)
+KeybindListTitle.Position = UDim2.new(0, 16, 0, 2)
 KeybindListTitle.BackgroundTransparency = 1
-KeybindListTitle.Text = "  Keybinds"
+KeybindListTitle.Text = "Keybinds"
 KeybindListTitle.TextColor3 = COLORS.textPrimary
 KeybindListTitle.Font = Enum.Font.GothamBold
 KeybindListTitle.TextSize = 13
