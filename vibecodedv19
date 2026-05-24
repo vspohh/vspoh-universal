@@ -39,7 +39,10 @@ local Config = {
         Snaplines = false,
         SnaplinesColor = Color3.fromRGB(255, 200, 0),
         Triggerbot = false,
-        TriggerbotDelay = 100
+        TriggerbotDelay = 100,
+        TriggerbotKeybind = Enum.KeyCode.Unknown,
+        TriggerbotMode = "Hold",
+        TriggerbotKeyActive = false
     },
     ESP = {
         Enabled = false,
@@ -1099,6 +1102,14 @@ do
     end
 end
 
+CreateKeybind(AimbotContent, "Triggerbot Key", Config.Aimbot.TriggerbotKeybind, Config.Aimbot.TriggerbotMode,
+    function(val) Config.Aimbot.TriggerbotKeybind = val end,
+    function(val)
+        Config.Aimbot.TriggerbotMode = val
+        if val == "Toggle" then Config.Aimbot.TriggerbotKeyActive = false end
+    end
+)
+
 CreateKeybind(AimbotContent, "Lock Keybind", Config.Aimbot.Keybind, Config.Aimbot.Mode, function(val) Config.Aimbot.Keybind = val end, function(val) Config.Aimbot.Mode = val end)
 local targetParts = {"Head", "HumanoidRootPart", "LowerTorso"}
 local defaultTargetIdx = 1
@@ -1977,6 +1988,12 @@ table.insert(Connections, UserInputService.InputBegan:Connect(function(input, ga
             end
         end
     end
+    -- Triggerbot keybind toggle-mode flip
+    if Config.Aimbot.Triggerbot and Config.Aimbot.TriggerbotKeybind ~= Enum.KeyCode.Unknown
+        and input.KeyCode == Config.Aimbot.TriggerbotKeybind
+        and Config.Aimbot.TriggerbotMode == "Toggle" then
+        Config.Aimbot.TriggerbotKeyActive = not Config.Aimbot.TriggerbotKeyActive
+    end
 end))
 
 table.insert(Connections, UserInputService.InputEnded:Connect(function(input)
@@ -2140,7 +2157,18 @@ table.insert(Connections, RunService.RenderStepped:Connect(function(dt)
     if not orbitingThisFrame then OrbitVisual.CFrame = CFrame.new(0, -9999, 0) end
 
     -- Triggerbot
-    if Config.Aimbot.Triggerbot then
+    local triggerbotActive = Config.Aimbot.Triggerbot
+    if triggerbotActive then
+        -- Keybind gate: Unknown = no key required; otherwise check hold/toggle state
+        if Config.Aimbot.TriggerbotKeybind ~= Enum.KeyCode.Unknown then
+            if Config.Aimbot.TriggerbotMode == "Hold" then
+                triggerbotActive = UserInputService:IsKeyDown(Config.Aimbot.TriggerbotKeybind)
+            else
+                triggerbotActive = Config.Aimbot.TriggerbotKeyActive
+            end
+        end
+    end
+    if triggerbotActive then
         local target = Mouse.Target
         if target and target.Parent then
             local hitPlayer = Players:GetPlayerFromCharacter(target.Parent)
